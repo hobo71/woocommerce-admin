@@ -12,7 +12,11 @@ import { __ } from '@wordpress/i18n';
  * WooCommerce dependencies
  */
 import { EllipsisMenu, MenuTitle, MenuItem, SectionHeader } from '@woocommerce/components';
-import SectionControls from '../../../../../client/dashboard/components/section-controls';
+
+/**
+ * Internal dependencies
+ */
+import UpcomingEvents from './upcoming-events';
 
 const apples = [
 	{
@@ -33,9 +37,9 @@ const apples = [
 	},
 ];
 
-// Upcoming events
-// Apple tasks
-// Inventory levels
+const items = [ { title: 'Upcoming Events', component: UpcomingEvents, key: 'upcoming-events' } ];
+
+// Global apple prices
 // Upcoming harvest dates
 
 class Section extends Component {
@@ -48,6 +52,7 @@ class Section extends Component {
 			onRemove,
 			isFirst,
 			isLast,
+			controls: Controls,
 		} = this.props;
 
 		return (
@@ -55,6 +60,18 @@ class Section extends Component {
 				label={ __( 'Choose Apples', 'woocommerce-admin' ) }
 				renderContent={ ( { onToggle } ) => (
 					<Fragment>
+						<MenuTitle>{ __( 'My Apples', 'woocommerce-admin' ) }</MenuTitle>
+						{ items.map( item => (
+							<MenuItem
+								checked //for now, this needs Albert's code
+								isCheckbox
+								isClickable
+								key={ item.key }
+								onInvoke={ () => {} } //for now, this needs Albert's code
+							>
+								{ item.title }
+							</MenuItem>
+						) ) }
 						<div className="woocommerce-ellipsis-menu__item">
 							<TextControl
 								label={ __( 'Section Title', 'woocommerce-admin' ) }
@@ -64,19 +81,7 @@ class Section extends Component {
 								value={ titleInput }
 							/>
 						</div>
-						<MenuTitle>{ __( 'My Apples', 'woocommerce-admin' ) }</MenuTitle>
-						{ apples.map( apple => (
-							<MenuItem
-								checked //for now, this needs Albert's code
-								isCheckbox
-								isClickable
-								key={ apple.title }
-								onInvoke={ () => {} } //for now, this needs Albert's code
-							>
-								{ apple.title }
-							</MenuItem>
-						) ) }
-						<SectionControls
+						<Controls
 							onToggle={ onToggle }
 							onMove={ onMove }
 							onRemove={ onRemove }
@@ -95,7 +100,9 @@ class Section extends Component {
 		return (
 			<Fragment>
 				<SectionHeader title={ title } menu={ this.renderMenu() } />
-				{ apples.map( apple => <p key={ apple.title }>{ apple.events[ 0 ].title }</p> ) }
+				<div className="woocommerce-dashboard__columns">
+					{ items.map( item => <item.component key={ item.key } config={ apples } /> ) }
+				</div>
 			</Fragment>
 		);
 	}
